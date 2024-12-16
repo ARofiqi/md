@@ -1,0 +1,172 @@
+package com.example.thriftlyfashion.ui.product
+
+import android.os.Bundle
+import android.util.Log
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.thriftlyfashion.R
+import com.example.thriftlyfashion.remote.SharedPrefManager
+import com.example.thriftlyfashion.remote.UserSession
+import com.example.thriftlyfashion.remote.api.ApiService
+import com.example.thriftlyfashion.remote.api.RetrofitClient
+import com.example.thriftlyfashion.remote.api.RetrofitClient2
+import com.example.thriftlyfashion.remote.model.CartItemRequest
+import com.example.thriftlyfashion.remote.model.Product
+import com.example.thriftlyfashion.remote.model.ProductCard
+import com.example.thriftlyfashion.ui.homepage.ProductListAdapter
+import com.google.android.flexbox.AlignItems
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class ProductDetailActivity : AppCompatActivity() {
+
+    private var pQuantity = 1
+    private var productDetail: Product? = null
+    private lateinit var amountProductPrice: TextView;
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_product_detail)
+
+        val btnBack: ImageView = findViewById(R.id.id_btnBack)
+        val amountProduct: TextView = findViewById(R.id.amountProduct)
+        amountProductPrice = findViewById(R.id.amountProductPrice)
+        val btnMinus: ImageView = findViewById(R.id.imageView5)
+        val btnPlus: ImageView = findViewById(R.id.imageView7)
+        val btnAddToCart: Button = findViewById(R.id.button)
+
+        val productId = intent.getIntExtra("PRODUCT_ID", 0)
+
+        fetchProductDetails(productId)
+
+        btnBack.setOnClickListener {
+            finish()
+        }
+
+        btnMinus.setOnClickListener {
+            if (pQuantity > 1) {
+                pQuantity--
+                amountProduct.text = pQuantity.toString()
+
+                productDetail?.let { product ->
+                    val totalPrice = product.price * pQuantity
+                    amountProductPrice.text = "Rp ${String.format("%,.0f", totalPrice)}"
+                }
+            } else {
+                Toast.makeText(this, "Jumlah produk minimal adalah 1", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnPlus.setOnClickListener {
+            pQuantity++
+            amountProduct.text = pQuantity.toString()
+
+            productDetail?.let { product ->
+                val totalPrice = product.price * pQuantity
+                amountProductPrice.text = "Rp ${String.format("%,.0f", totalPrice)}"
+            }
+        }
+
+        btnAddToCart.setOnClickListener {
+            val sharedPrefManager = SharedPrefManager(this)
+            val userId = sharedPrefManager.getUserId()
+            val cartItem = CartItemRequest(product_id = productId, quantity = pQuantity)
+
+            val apiService = RetrofitClient2.createService(ApiService::class.java)
+            apiService.addToCart(userId, cartItem).enqueue(object : Callback<Map<String, Any>> {
+                override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
+                    if (response.isSuccessful) {
+                        showCustomToast("Berhasil Menambahkan $pQuantity item ke keranjang", R.drawable.logo)
+                    } else {
+                        showCustomToast("Gagal Menambahkan Kekeranjang, Periksa Koneksi Internet", R.drawable.logo)
+                    }
+                }
+
+                override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                    showCustomToast("Error: ${t.message}", R.drawable.logo)
+                }
+            })
+        }
+    }
+
+    private fun showCustomToast(message: String, iconResId: Int) {
+        val inflater = layoutInflater
+        val layout = inflater.inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_container))
+
+        val toastIcon = layout.findViewById<ImageView>(R.id.toast_icon)
+        val toastMessage = layout.findViewById<TextView>(R.id.toast_message)
+
+        toastIcon.setImageResource(iconResId)
+        toastMessage.text = message
+
+        val toast = Toast(applicationContext)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = layout
+        toast.show()
+    }
+
+    private fun fetchProductDetails(productId: Int) {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val response = RetrofitClient2.createService(ApiService::class.java).getProductDetail(productId)
+                if (response.isSuccessful) {
+                    Log.d("ProductDetail", "Fetching product with ID: $productId")
+                    productDetail = response.body()
+
+                    productDetail?.let { product ->
+                        val totalPrice = product.price * pQuantity
+                        amountProductPrice.text = "Rp ${String.format("%,.0f", totalPrice)}"
+                    }
+
+                    updateUI()
+                } else {
+                    Toast.makeText(this@ProductDetailActivity, "Failed to load product details", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@ProductDetailActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun updateUI() {
+        productDetail?.let { product ->
+            val productName: TextView = findViewById(R.id.id_productName)
+            val productPrice: TextView = findViewById(R.id.id_productPrice)
+            val productCategory: TextView = findViewById(R.id.id_productCategory)
+            val productDescription: TextView = findViewById(R.id.id_productDescription)
+            val productColor: TextView = findViewById(R.id.id_productColor)
+            val productSize: TextView = findViewById(R.id.id_productSize)
+            val productQuantity: TextView = findViewById(R.id.id_productQuantity)
+            val productImage: ImageView = findViewById(R.id.id_productImage)
+
+            productName.text = product.name
+            productPrice.text = "Rp ${String.format("%,.0f", product.price)}"
+            productCategory.text = product.category
+            productDescription.text = product.description
+            productColor.text = "Color: ${product.color}"
+            productSize.text = "Size: ${product.size}"
+            productQuantity.text = "Product quantity: ${product.quantity} item"
+
+            product.images?.firstOrNull()?.let { imageUrl ->
+                Glide.with(this@ProductDetailActivity)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.image)
+                    .into(productImage)}
+        }
+    }
+}

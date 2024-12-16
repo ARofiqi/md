@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary2"
+    tools:context=".ui.login.LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_title"
+            android:fontFamily="@font/poppins_medium"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="45dp" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/imput_background"
+            android:fontFamily="@font/poppins_light"
+            android:hint="@string/email_hint"
+            android:inputType="text"
+            android:textColor="@color/black"
+            android:textColorHint="@color/grey"
+            android:padding="11dp"
+            android:textSize="18sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/imput_background"
+                android:fontFamily="@font/poppins_light"
+                android:hint="@string/password_hint"
+                android:inputType="textPassword"
+                android:padding="11dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/ivTogglePassword"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/baseline_visibility_24" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvForgetPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="34dp"
+            android:fontFamily="@font/poppins_light"
+            android:gravity="end"
+            android:text="@string/forgot_password"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            android:textStyle="italic" />
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login_button"
+            android:fontFamily="@font/poppins_medium"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:background="@drawable/button_rounded"
+            android:textColor="@color/white"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:id="@+id/tvRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="@font/poppins_light"
+            android:gravity="center"
+            android:text="@string/register_prompt"
+            android:textColor="@color/grey"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/or_text"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/button_outline"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:text="@string/continue_with_google"
+            android:textColor="@color/primary3"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnFacebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_outline"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:text="@string/continue_with_facebook"
+            android:textColor="@color/primary3"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+</ScrollView>
